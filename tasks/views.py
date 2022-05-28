@@ -40,7 +40,6 @@ def task(request):
         else:
             due_date = datetime.datetime.strptime(request.POST['due_date'], "%Y-%m-%d")
 
-
             task = Task.objects.create(
                 group=request.POST['group'],
                 title=request.POST['title'],
@@ -55,9 +54,19 @@ def task(request):
         data = list(Task.objects.values()) 
         return JsonResponse(data, safe=False) 
 
-    return HttpResponse('{"msg":"not implemented yet"}')
-
+@csrf_exempt
 def task_detail(request, id):
-    data = Task.objects.get(id=id) 
-    serialized_obj = serializers.serialize('json', [ data, ])
+    task = Task.objects.get(id=id) 
+    from django.http import QueryDict
+    put = QueryDict(request.body)
+
+
+    if request.method =='PUT':
+        fields = ['title', 'description', 'category', 'urgency', 'due_date']
+        for field in fields:
+            if field in request.POST:
+                task[field] = request.POST[field]
+                print('Updating field', field)
+            task.save()
+    serialized_obj = serializers.serialize('json', [ task, ])
     return HttpResponse(serialized_obj[1:-1], content_type='application/json')

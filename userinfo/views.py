@@ -4,7 +4,15 @@ from .models import Profile
 from django.http import HttpResponse
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login
+import base64
+from rest_framework.authtoken.models import Token
 
+def convertBase64(message):
+    message_bytes = message.encode('ascii')
+    base64_bytes = base64.b64encode(message_bytes)
+    base64_message = base64_bytes.decode('ascii')
+    return base64_message
 
 
 def check_register_for_errors(request):
@@ -33,3 +41,23 @@ def register(request):
         else:
         	return HttpResponse('{"msg":"Could not create user."}', status=500)
 
+@csrf_exempt
+def login(request):
+    print(request)
+    try:
+        username = request.POST['email']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            # login(user)
+            # token = django.middleware.csrf.get_token(request)
+            
+            # token = convertBase64(username + ':' + password)
+            token, created = Token.objects.get_or_create(user=user)
+
+            resp = '{"token": "' + token.key +'", "msg":"Login successful"}';
+            return HttpResponse(resp)
+    except Exception as e:
+        print('Error', e)
+    
+    return HttpResponse('{"msg":"Login failed"}')

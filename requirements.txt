@@ -13,6 +13,7 @@ charset-normalizer==2.0.9
 click==8.1.2
 colorama==0.4.4
 Django==3.2.9
+djangorestframework==3.13.1
 docutils==0.17.1
 Eel==0.12.4
 Flask==2.1.1

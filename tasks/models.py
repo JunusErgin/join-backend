@@ -30,3 +30,6 @@ class Task(models.Model):
     group = models.CharField(max_length=6, default='UNSET')
     due_date = models.DateField()
     users = models.ManyToManyField(User)
+
+    def __str__(self):
+        return '[Gruppe {}] - {}'.format(self.group, self.title)

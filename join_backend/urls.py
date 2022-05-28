@@ -17,13 +17,15 @@ from django.contrib import admin
 from django.urls import path, include
 from tasks.views import TaskViewSet # login, task, task_detail,
 from rest_framework import routers
+from userinfo.views import register
 
 router = routers.DefaultRouter()
 router.register(r'tasks', TaskViewSet)
 
 
 urlpatterns = [
-    path('api/v2/', include(router.urls)),
+    path('api/', include(router.urls)),
+    path('api/register/', register),
     path('admin/', admin.site.urls),
     # path('api/login/', login),
     # path('api/task/', task),

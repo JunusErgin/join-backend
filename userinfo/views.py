@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
+
+from .serializers import ProfileSerializer
 from .models import Profile
 from django.http import HttpResponse
 from django.core import serializers
@@ -7,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 import base64
 from rest_framework.authtoken.models import Token
+from rest_framework import viewsets, permissions
 
 def convertBase64(message):
     message_bytes = message.encode('ascii')
@@ -61,3 +64,15 @@ def login(request):
         print('Error', e)
     
     return HttpResponse('{"msg":"Login failed"}')
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all().order_by('-id')
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # kwargs = self.kwargs
+        # print(kwargs)
+        profile = Profile.objects.get(user=self.request.user)
+        return Profile.objects.filter(group=profile.group)

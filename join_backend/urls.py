@@ -17,10 +17,11 @@ from django.contrib import admin
 from django.urls import path, include
 from tasks.views import TaskViewSet # login, task, task_detail,
 from rest_framework import routers
-from userinfo.views import register, login
+from userinfo.views import ProfileViewSet, register, login
 
 router = routers.DefaultRouter()
 router.register(r'tasks', TaskViewSet)
+router.register(r'profiles', ProfileViewSet)
 
 
 urlpatterns = [

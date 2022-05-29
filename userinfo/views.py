@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login
 import base64
 from rest_framework.authtoken.models import Token
 from rest_framework import viewsets, permissions
+from rest_framework.response import Response
 
 def convertBase64(message):
     message_bytes = message.encode('ascii')
@@ -70,9 +71,17 @@ class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all().order_by('-id')
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ['get',]
 
     def get_queryset(self):
-        # kwargs = self.kwargs
-        # print(kwargs)
         profile = Profile.objects.get(user=self.request.user)
         return Profile.objects.filter(group=profile.group)
+
+    def list(self, request):
+        myProfile = Profile.objects.get(user=self.request.user)
+        profiles = Profile.objects.filter(group=myProfile.group)
+        serializer = self.get_serializer(profiles, many=True)
+        # return JSONResponse(serializer.data)
+        return Response(serializer.data)
+
+        # return Profile.objects.filter(group=profile.group)
